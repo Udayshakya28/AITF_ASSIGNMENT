@@ -1,7 +1,6 @@
 import requests
 from django.core.cache import cache
 from django.conf import settings
-from openai import OpenAI
 import logging
 
 logger = logging.getLogger(__name__)
