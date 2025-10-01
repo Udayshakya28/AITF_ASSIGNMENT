@@ -43,6 +43,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "corsheaders.middleware.CorsMiddleware",  # must be high in the list
+    "django.middleware.common.CommonMiddleware",
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -103,8 +105,16 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 def _split_env(name):
     return [v for v in os.getenv(name, '').split(',') if v]
 
-CORS_ALLOWED_ORIGINS = _split_env('CORS_ALLOWED_ORIGINS')   # e.g. https://your-frontend.vercel.app
-CSRF_TRUSTED_ORIGINS = _split_env('CSRF_TRUSTED_ORIGINS')   # same as above
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",   # React / frontend dev server
+    "http://127.0.0.1:3000",   # Optional: some tools use 127.0.0.1 instead
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
+
 CORS_ALLOW_CREDENTIALS = True
 
 # --- Cache (unchanged) ---
