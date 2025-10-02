@@ -1,17 +1,5 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
-import { supabase } from '../lib/supabase'
-
-const getApiUrl = () => {
-  if (window.location.hostname.includes('replit.dev')) {
-    const protocol = window.location.protocol
-    const hostname = window.location.hostname
-    return `${protocol}//${hostname}:8000/api`
-  }
-  return 'http://localhost:8000/api'
-}
-
-const API_URL = getApiUrl()
 
 const translations = {
   en: {
@@ -117,14 +105,13 @@ export default function Dashboard() {
 
   const loadSearchHistory = async () => {
     try {
-      const { data, error } = await supabase
-        .from('search_history')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(5)
-
-      if (error) throw error
-      setSearchHistory(data || [])
+      const response = await fetch('/api/search-history', {
+        credentials: 'include',
+      })
+      if (response.ok) {
+        const data = await response.json()
+        setSearchHistory(data.slice(0, 5))
+      }
     } catch (err) {
       console.error('Error loading history:', err)
     }
@@ -132,21 +119,14 @@ export default function Dashboard() {
 
   const saveSearchHistory = async (searchData) => {
     try {
-      const { error } = await supabase
-        .from('search_history')
-        .insert([
-          {
-            user_id: user.id,
-            place: searchData.place,
-            query: searchData.query,
-            persona: searchData.persona,
-            language: searchData.language,
-            weather_summary: searchData.weatherSummary,
-            suggestions: searchData.suggestions,
-          },
-        ])
-
-      if (error) throw error
+      await fetch('/api/search-history', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(searchData),
+      })
       await loadSearchHistory()
     } catch (err) {
       console.error('Error saving history:', err)
@@ -185,9 +165,10 @@ export default function Dashboard() {
     setSuggestions(null)
 
     try {
-      const weatherRes = await fetch(`${API_URL}/weather`, {
+      const weatherRes = await fetch('/api/weather', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ place, timezone: 'auto', lang }),
       })
 
@@ -199,9 +180,10 @@ export default function Dashboard() {
       const weatherData = await weatherRes.json()
       setWeather(weatherData)
 
-      const suggestRes = await fetch(`${API_URL}/suggest`, {
+      const suggestRes = await fetch('/api/suggest', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           query,
           place: weatherData.placeLabel,
