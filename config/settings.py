@@ -134,6 +134,9 @@ GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', '')
 
 # --- REST Framework ---
 REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+    ],
     'DEFAULT_THROTTLE_CLASSES': ['rest_framework.throttling.AnonRateThrottle'],
     'DEFAULT_THROTTLE_RATES': {'anon': '30/min'},
 }
