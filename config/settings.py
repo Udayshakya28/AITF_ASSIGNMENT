@@ -106,13 +106,13 @@ def _split_env(name):
     return [v for v in os.getenv(name, '').split(',') if v]
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",   # React / frontend dev server
-    "http://127.0.0.1:3000",   # Optional: some tools use 127.0.0.1 instead
+    "http://localhost:5000",
+    "http://127.0.0.1:5000",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
+    "http://localhost:5000",
+    "http://127.0.0.1:5000",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
